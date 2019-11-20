@@ -1,15 +1,29 @@
-//
-//  main.cpp
-//  CECS328_Project2
-//
-//  Created by Andrew Gomez on 11/18/19.
-//  Copyright © 2019 Andrew Gomez. All rights reserved.
-//
+// Name: Andrew Gomez
+// Class: CECS328
+// Project: Project 2
 
 #include <iostream>
+#include <string>
+#include "main.hpp"
 
-int main(int argc, const char * argv[]) {
-    // insert code here...
-    std::cout << "Hello, World!\n";
+using namespace std;
+
+int main() {
+    
+    string i = getUserInput();
+    cout << "The user input was " << i << endl;
     return 0;
+}
+
+
+
+
+
+// Methods
+
+string getUserInput()   {
+    string userInput;
+    cout << "Please enter your equation as a single line: " << endl;
+    getline(cin, userInput);
+    return userInput;
 }
