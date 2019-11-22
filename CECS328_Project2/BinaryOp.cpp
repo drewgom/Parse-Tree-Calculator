@@ -8,21 +8,20 @@
 BinaryOp::BinaryOp(char opAsChar)   {
     //Here, we will take the users input and cast it to
     // an integer. From there, we can tell what operator it is supposed to be
-    int ASCIIofInputOp = (int) opAsChar;
-    switch(ASCIIofInputOp)  {
-        case 43:
+    switch(opAsChar)  {
+        case '+':
             this->typeOfOperation = ADDITION;
             break;
-        case 45:
+        case '-':
             this->typeOfOperation = SUBTRACTION;
             break;
-        case 42:
+        case '*':
             this->typeOfOperation = MULTIPLICATION;
             break;
-        case 47:
+        case '/':
             this->typeOfOperation = DIVISION;
             break;
-        case 94:
+        case '^':
             this->typeOfOperation = EXPONENTIATION;
             break;
     }

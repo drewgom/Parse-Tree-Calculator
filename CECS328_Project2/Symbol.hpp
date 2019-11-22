@@ -5,11 +5,14 @@
 #ifndef Symbol_hpp
 #define Symbol_hpp
 
-#include <stdio.h>
 #include <string>
 
 using namespace std;
-
+enum typeOfSymbol {
+    BINARY_OPERATOR,
+    GROUPING_OPERATOR,
+    OPERAND
+};
 
 // This class represents a character in a mathematical expression that is entered.
 // In the assignment, This was called an "operator". However, since that is
