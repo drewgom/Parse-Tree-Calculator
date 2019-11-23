@@ -17,5 +17,6 @@ deque<Symbol*> stringToSymbols(string stringToTransform);
 map<char, typeOfSymbol> getCharToSymbolMappings();
 deque<Symbol*> infixToPostfix(deque<Symbol*> infixDeque);
 map<string, int> getOrderOfOperations();
+bool shouldOffloadStack(stack<Op*> *stackOfOperators, Op* currentOperator);
 
 #endif

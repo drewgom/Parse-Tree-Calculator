@@ -68,6 +68,7 @@ deque<Symbol*> stringToSymbols(string stringToTransform)    {
         }
         else if (charSymbolMappings[stringToTransform[i]] == BINARY_OPERATOR) {
             listOfSymbols.push_back(new BinaryOp(stringToTransform[i]));
+            
         }
         // If we reach this case, we have a number
         else    {
@@ -91,7 +92,7 @@ deque<Symbol*> stringToSymbols(string stringToTransform)    {
 
 deque<Symbol*> infixToPostfix(deque<Symbol*> infixDeque) {
     deque<Symbol*> postfixDeque;
-    stack<BinaryOp*> stackOfOperators;
+    stack<Op*> stackOfOperators;
     
     map<string, int> OrderOfOperations = getOrderOfOperations();
     // While there is still elements in our queue, we are going to take the first element off the front
@@ -104,42 +105,58 @@ deque<Symbol*> infixToPostfix(deque<Symbol*> infixDeque) {
         // Gets the next symbol in the queue
         Symbol* currentSymbol = infixDeque.front();
         infixDeque.pop_front();
-        cout << "Current Symbol is " << currentSymbol->getValue() << endl;
+        
         
         if (dynamic_cast<Operand*>(currentSymbol))    {
             postfixDeque.push_back(currentSymbol);
         }
         
-        // If that condition is not met, it is some sort of operand
+        // If that condition is not met, it is some sort of operator
         else    {
-            BinaryOp* currentOperator = dynamic_cast<BinaryOp*>(currentSymbol);
+            Op* currentOperator = dynamic_cast<Op*>(currentSymbol);
             // If the stack is empty, we just add the element
             if (stackOfOperators.empty())   {
                 stackOfOperators.push(currentOperator);
-                cout << "Stack of operators is empty - pushing to stack " << currentSymbol->getValue() << endl;
             }
             // If the stack is not empty, we need to compare its precedence to the next element on the stack
             // If the top element on the stack is of higher precedence than the current element, then we need to
             // pop off that value, add it to the return list, and push on the current value
             else    {
+                // There are three conditions that need to be checked here:
+                //  1. The current operator we are looking at is of lower precedence than the top of the stack
+                //  2. The stack is not empty
+                //  3. The top of the stack is not an open parenthesis
+                // This was confusing to look at, so I put it in to a seperate function that will evaluate this
+                // every time the loop runs
                 
-                cout << "Stack size is " << stackOfOperators.size() << endl;
-                while (OrderOfOperations[stackOfOperators.top()->getValue()] >= OrderOfOperations[currentOperator->getValue()] && !stackOfOperators.empty())   {
-                    cout << "Top of stack is of higher precedence than current - " << stackOfOperators.top()->getValue() << " is higher than " << currentOperator->getValue() << endl;
+                // What is nice about this implementation is that it will always terminate if there
+                // is a left parentheses. So, if one of the arguments is a right parentheses, this
+                // program will work properly. We just have to pop off the left parentheses once we
+                // finish this loop
+                
+                while (shouldOffloadStack(&stackOfOperators, currentOperator))   {
                     postfixDeque.push_back(stackOfOperators.top());
-                    cout << "size of stack is : " << stackOfOperators.size() << endl;
                     stackOfOperators.pop();
                     
                     if (stackOfOperators.empty()) {
                         break;
                     }
                 }
-                cout << "Pushing " << currentOperator->getValue() << " to stack" << endl;
-                stackOfOperators.push(currentOperator);
+                
+                // This takes off the left parentheses if we have a right parentheses
+                if (currentOperator->getValue() == "RIGHT_PARENTHESIS")   {
+                    stackOfOperators.pop();
+                }
+                
+                // If we dont have a right parentheses, then at this point we would want to push the current operator
+                else {
+                   stackOfOperators.push(currentOperator);
+                }
+                
+                
             }
         }
         
-        cout << endl;
     }
     
     // If we have gone through the whole input and there is still something in the stack,
@@ -156,6 +173,21 @@ deque<Symbol*> infixToPostfix(deque<Symbol*> infixDeque) {
 }
 
 
+bool shouldOffloadStack(stack<Op*> *stackOfOperators, Op* currentOperator)   {
+    map<string, int> OrderOfOperations = getOrderOfOperations();
+    if (stackOfOperators->top()->getValue() == "LEFT_PARENTHESIS")   {
+        return false;
+    }
+    
+    else    {
+        if (currentOperator->getValue() == "RIGHT_PARENTHESIS") {
+            return true;
+        }
+        else    {
+            return OrderOfOperations[stackOfOperators->top()->getValue()] >= OrderOfOperations[currentOperator->getValue()] && !stackOfOperators->empty();
+        }
+    }
+}
 
 
 
@@ -190,5 +222,7 @@ map<string, int> getOrderOfOperations()  {
         {"MULTIPLICATION", 2},
         {"DIVISION", 2},
         {"EXPONENTIATION", 3},
+        {"LEFT_PARENTHESIS", 4},
+        {"RIGHT_PARENTHESIS", 4}
     };
 }
